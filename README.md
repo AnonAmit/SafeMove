@@ -1,6 +1,6 @@
-# SafeMove AI 🚀
+# SafeMove  🚀
 
-SafeMove AI is an intelligent file management utility designed to safely move applications (e.g., from `C:` to `D:`) without breaking them. It uses **Windows Directory Junctions** (`mklink /J`) and robust `robocopy` operations to ensure data integrity and seamless redirection.
+SafeMove is an intelligent file management utility designed to safely move applications (e.g., from `C:` to `D:`) without breaking them. It uses **Windows Directory Junctions** (`mklink /J`) and robust `robocopy` operations to ensure data integrity and seamless redirection.
 
 # UI
 <img src="ui.png" width="300" />
