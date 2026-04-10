@@ -51,5 +51,3 @@ SafeMove AI is designed with safety as priority #1:
 ## Disclaimer
 Always backup critical data before performing bulk file operations. While SafeMove AI uses industry-standard safe methods (`robocopy`), I am not responsible for data loss.
 
-## License
-MIT License
