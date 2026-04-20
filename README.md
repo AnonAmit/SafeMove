@@ -41,12 +41,6 @@ python main.py
 4. **Move**: Click **Execute Move Plan**.
     - *Note: Requires Administrator Privileges.*
 
-## Safety First
-SafeMove AI is designed with safety as priority #1:
-- Aborts if target folder exists (conflict) or auto-renames.
-- Aborts if source files are locked (in use).
-- Verifies copy success before deleting source.
-- Logs every action to `app.log`.
 
 ## Disclaimer
 Always backup critical data before performing bulk file operations. While SafeMove AI uses industry-standard safe methods (`robocopy`), I am not responsible for data loss.
