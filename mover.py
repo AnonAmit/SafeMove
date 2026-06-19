@@ -9,7 +9,7 @@ from storage import storage
 class MoverError(Exception):
     pass
 
-def run_command(cmd_args, shell=True):
+def run_command(cmd_args, shell=False):
     """Run a system command and return output. Raises MoverError on failure."""
     try:
         # Robocopy has special return codes:
@@ -34,6 +34,8 @@ def move_item(item: AppItem | FolderItem, target_root: str):
     classification = classify_item(item)
     if classification.category == "FORBIDDEN":
         raise MoverError(f"Safety Block: {classification.reason}")
+    if classification.category == "MOVED":
+        raise MoverError(f"Item already moved: {classification.reason}")
     
     source_path = os.path.normpath(item.path)
     if not os.path.exists(source_path):
@@ -52,6 +54,8 @@ def move_item(item: AppItem | FolderItem, target_root: str):
             base_name = folder_name
             counter = 1
             while os.path.exists(target_path) and os.listdir(target_path):
+                if counter > 1000:
+                    raise MoverError("Infinite loop detected in collision handling")
                 new_name = f"{base_name}_{counter}"
                 target_path = os.path.join(target_root, new_name)
                 counter += 1
@@ -67,18 +71,13 @@ def move_item(item: AppItem | FolderItem, target_root: str):
     # /R:3 /W:1 = retry 3 times, wait 1 sec
     robocopy_cmd = [
         "robocopy",
-        f'"{source_path}"',
-        f'"{target_path}"',
+        source_path,
+        target_path,
         "/E", "/COPYALL", "/MOVE",
         "/R:3", "/W:1"
     ]
     
-    # robocopy args need to be a string for shell=True usually to handle quotes right, 
-    # OR list with shell=False. Windows is tricky.
-    # We will use string command for fewer issues with quote parsing in subprocess on Windows
-    cmd_str = " ".join(robocopy_cmd)
-    
-    result = run_command(cmd_str)
+    result = run_command(robocopy_cmd)
     
     # Robocopy return codes: < 8 is success
     if result.returncode >= 8:
@@ -100,7 +99,7 @@ def move_item(item: AppItem | FolderItem, target_root: str):
 
     # 4. Link
     # mklink /J Link Target
-    link_cmd = f'mklink /J "{source_path}" "{target_path}"'
+    link_cmd = ["cmd", "/c", "mklink", "/J", source_path, target_path]
     link_res = run_command(link_cmd)
 
     if link_res.returncode != 0:
@@ -140,7 +139,7 @@ def rollback_move(move_id: int):
              raise MoverError(f"Failed to remove junction '{source_path}': {e}. Is it a real folder?")
     
     # 2. Move Back
-    robocopy_cmd = f'robocopy "{target_path}" "{source_path}" /E /COPYALL /MOVE /R:3 /W:1'
+    robocopy_cmd = ["robocopy", target_path, source_path, "/E", "/COPYALL", "/MOVE", "/R:3", "/W:1"]
     result = run_command(robocopy_cmd)
     
     if result.returncode >= 8:

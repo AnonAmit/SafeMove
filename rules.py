@@ -104,6 +104,9 @@ def classify_item(item: AppItem | FolderItem) -> ClassifiedItem:
         
         # Other user folders like .minecraft, .vscode match here
         if os.path.basename(path).startswith("."):
+             denylist = [".ssh", ".gnupg", ".aws", ".config", ".docker"]
+             if os.path.basename(path).lower() in denylist:
+                 return ClassifiedItem(item, "FORBIDDEN", f"Dangerous dot-folder: {os.path.basename(path)}")
              return ClassifiedItem(item, "SAFE", "Dot-folder in User profile")
              
     # If it's a game in a known library path (simple heuristic)

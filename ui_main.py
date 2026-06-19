@@ -121,6 +121,7 @@ class MainWindow(QMainWindow):
         self.resize(1100, 750)
         
         self.classified_items = []
+        self.nvidia_junk_items = []
         
         # Apply Base Styling
         self.apply_theme()

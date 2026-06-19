@@ -49,6 +49,9 @@ class AIClient:
         elif mode == "local":
             url = conf.get("base_url", "http://localhost:11434/v1/chat/completions")
         
+        if not url:
+            return "Configuration Error: No valid URL configured for the selected provider."
+        
         payload = {
             "model": model,
             "messages": [
