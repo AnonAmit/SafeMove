@@ -1,3 +1,4 @@
+import copy
 import json
 import os
 from pathlib import Path
@@ -23,7 +24,7 @@ DEFAULT_CONFIG = {
 
 class Config:
     def __init__(self):
-        self._data = DEFAULT_CONFIG.copy()
+        self._data = copy.deepcopy(DEFAULT_CONFIG)
         self.load()
 
     def load(self):
